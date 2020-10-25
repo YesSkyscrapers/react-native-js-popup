@@ -63,26 +63,28 @@ class PopUp extends React.Component {
             this.animationValue = value
         });
 
-        addStateListener(this.stateChange)
+        addStateListener(this.props.name, this.stateChange)
     }
 
     componentWillUnmount() {
-        removeStateListener(this.stateChange)
+        removeStateListener(this.props.name, this.stateChange)
     }
 
-    stateChange = (activePopUp, props) => {
-        const newIsShow = this.props.name == activePopUp;
-        const prevIsShow = this.popupState.isActive;
-        if (newIsShow != prevIsShow && !this.swipeActive) {
-            this.popupState = {
-                isActive: newIsShow,
-                activePopupName: activePopUp,
-                props
+    stateChange = (activePopUp, state, props) => {
+        if (activePopUp == this.props.name) {
+            const newIsShow = state;
+            const prevIsShow = this.popupState.isActive;
+            if (newIsShow != prevIsShow && !this.swipeActive) {
+                this.popupState = {
+                    isActive: newIsShow,
+                    activePopupName: activePopUp,
+                    props
+                }
+                this.animationLock = true;
+                this.animate(newIsShow, () => {
+                    this.animationLock = false;
+                })
             }
-            this.animationLock = true;
-            this.animate(newIsShow, () => {
-                this.animationLock = false;
-            })
         }
     }
 
@@ -127,7 +129,7 @@ class PopUp extends React.Component {
                 if (!value) {
                     this.toggleBackground(false)
                     if (this.checkThreshold()) {
-                        togglePopUp(false)
+                        togglePopUp(this.props.name, false)
                         Keyboard.dismiss()
                     }
                 }
@@ -155,7 +157,7 @@ class PopUp extends React.Component {
         if (this.props.onClose) {
             this.props.onClose()
         } else {
-            togglePopUp(false)
+            togglePopUp(this.props.name, false)
         }
     }
 
@@ -176,7 +178,7 @@ class PopUp extends React.Component {
                 this.swipeActive = true;
 
                 if (this.props.name !== this.popupState.activePopupName) {
-                    togglePopUp(this.props.name)
+                    togglePopUp(this.props.name, true)
                 }
 
                 if (!this.lastPopupHeight) {

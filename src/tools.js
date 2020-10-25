@@ -1,20 +1,21 @@
 import React from 'react'
 
-let popups = []
-let listeners = []
+let listeners = {}
 
-const togglePopUp = (name, props) => {
-    listeners.forEach(listener => {
-        listener(name, props)
+const togglePopUp = (name, state, props) => {
+    listeners[name] = listeners[name] ? listeners[name] : []
+    listeners[name].forEach(listener => {
+        listener(name, state, props)
     })
 }
 
-const addStateListener = (func) => {
-    listeners.push(func)
+const addStateListener = (name, func) => {
+    listeners[name] = listeners[name] ? listeners[name] : []
+    listeners[name].push(func)
 }
 
-const removeStateListener = (func) => {
-    listeners = listeners.filter(listener => listeners != func);
+const removeStateListener = (name, func) => {
+    listeners[name] = listeners[name].filter(listener => listener != func);
 }
 
 
